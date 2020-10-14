@@ -1,0 +1,26 @@
+<snippet>
+	<content><![CDATA[
+v pa,szz;
+int Find(int u)
+{
+    if(u==pa[u])
+        return u;
+    return pa[u]=Find(pa[u]);
+}
+void Union(int a,int b)
+{
+    a=Find(a);
+    b=Find(b);
+    if(a==b)
+        return ;
+    if(szz[a] > szz[b])
+        swap(a,b);
+    pa[a]=b;
+    szz[b]+=szz[a];
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>dsu</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

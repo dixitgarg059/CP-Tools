@@ -1,0 +1,9 @@
+{
+	"color_scheme": "Packages/Color Scheme - Default/Monokai.sublime-color-scheme",
+	"font_size": 16,
+	"ignored_words":
+	[
+		"kth"
+	],
+	"theme": "Adaptive.sublime-theme"
+}

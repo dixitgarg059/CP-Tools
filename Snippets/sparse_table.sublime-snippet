@@ -1,0 +1,26 @@
+<snippet>
+	<content><![CDATA[
+vv dp(300001,v(30));
+void build(int n)
+{
+	for(int i=0;i<n;i++)
+		dp[i][0]=ar[i];
+	for(int j=1;(1ll<<j)<=n;j++)
+	{
+		for(int i=0;(i+(1ll<<j)-1 )<n;i++)
+		{
+			dp[i][j]=__gcd(dp[i][j-1],dp[i+(1ll<<(j-1))][j-1]);
+		}
+	}
+}
+int query(int l,int r)
+{
+	int f=log2(r-l+1);
+	return __gcd(dp[l][f],dp[r-(1ll<<f)+1][f]);
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>sparse</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

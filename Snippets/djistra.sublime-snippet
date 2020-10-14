@@ -1,0 +1,40 @@
+<snippet>
+	<content><![CDATA[
+int parent[200005];
+void djistra(vv &graph,int root,map<pair<int,int>,int>&wt,v &dist,int n)
+{
+	v sptset(n,0);
+	f(i,n)
+	{
+		dist[i]=1e18;
+	}
+	dist[root]=0;
+	priority_queue<pair<int,int>,vpr,greater<pair<int,int> >>que;
+	que.push(mp(0,root));
+	parent[root]=root;
+	while(!que.empty())
+	{
+		int u=que.top().second;
+		int dis=que.top().first;
+		que.pop();
+		if(sptset[u]==1)
+			continue;
+		sptset[u]=1;
+		for(auto it:graph[u])
+		{
+			if(dist[it] > (dist[u]+wt[mp(u,it)]))
+			{
+				parent[it]=u;
+				dist[it]=(dist[u]+wt[mp(u,it)]);
+				que.push(mp(dist[it],it));
+			}
+		}
+	}
+	return ;
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>djistra</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

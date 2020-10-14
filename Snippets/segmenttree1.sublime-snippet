@@ -1,0 +1,57 @@
+<snippet>
+	<content><![CDATA[
+// for index below
+
+int seg[400005], arr[100004];
+void build(int pos, int ss, int se) {
+    if (ss == se) {
+        seg[pos] = ss;
+        return;
+}
+    int mid = (ss + se) / 2;
+    build(2 * pos + 1, ss, mid);
+    build(2 * pos + 2, mid + 1, se);
+    seg[pos] = se;
+}
+int query(int pos, int ss, int se, int l, int r) {
+    if (l > se || r < ss)
+        return -1;
+    if (l >= ss && r <= se)
+        return seg[pos];
+    int mid = (ss + se) / 2;
+    int q1 = query(2 * pos + 1, ss, mid, l, r);
+    int q2 = query(2 * pos + 2, mid + 1, se, l, r);
+    if (q1 == -1)
+        return q2;
+    if (q2 == -1)
+        return q1;
+    if (arr[q1] <= arr[q2])
+        return q2;
+    return q1;
+}
+void update(int pos, int ss, int se, int index) {
+    if (index < ss || index > se)
+        return;
+    if (index >= ss && index <= se)
+        return;
+    int mid = (ss + se) / 2;
+    update(2 * pos + 1, ss, mid, index);
+    update(2 * pos + 2, mid + 1, se, index);
+    if (seg[2 * pos + 1] == -1)
+        seg[pos] = seg[2 * pos + 2];
+    else if (seg[2 * pos + 2] == -1)
+        seg[pos] = seg[2 * pos + 1];
+    else {
+        if (arr[seg[2 * pos + 1]] <= arr[seg[2 * pos + 2]])
+            seg[pos] = seg[2 * pos + 2];
+        else
+            seg[pos] = seg[2 * pos + 1];
+    }
+    return;
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>seg2</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

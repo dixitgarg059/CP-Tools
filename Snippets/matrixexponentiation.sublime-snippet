@@ -1,0 +1,103 @@
+<snippet>
+	<content><![CDATA[
+#include<bits/stdc++.h> 
+using namespace std; 
+#define v vector<int>
+#define vv vector< vector<int> >
+#define int long long
+#define mod 1000000007
+#define pb push_back
+int power1(int a,int b)
+{
+	if(b==0)
+		return 1;
+	int d=power1(a,b/2);
+	if(b&1)
+	{
+		d=(d*a);
+		if(d>mod)
+			d%=mod;
+	}
+	return d;
+}
+void multiply(vv &a, vv &b) 
+{ 
+	
+	int mul[2][2]; 
+	for (int i = 0; i < 2; i++) 
+	{ 
+		for (int j = 0; j < 2; j++) 
+		{ 
+			mul[i][j] = 0; 
+			for (int k = 0; k < 2; k++) 
+				mul[i][j] += (a[i][k]*b[k][j])%mod;
+				if(mul[i][j]>mod) 
+					mul[i][j]%=mod;
+		} 
+	} 
+
+	
+	for (int i=0; i<2; i++) 
+		for (int j=0; j<2; j++) 
+			a[i][j] = mul[i][j]; // Updating our matrix 
+} 
+
+// Function to compute F raise to power n-2. 
+vv power(vv F, int n) 
+{ 
+	
+	if(n==1)
+		return F;
+	
+	vv mat=power(F, n/2); 
+
+	multiply(mat,mat); 
+
+	if (n%2 != 0) 
+		multiply(mat, F);
+	return mat; 
+	
+} 
+int solve(int n,int m) 
+{
+	if(m>mod)
+		m%=mod;
+	int l=m*m;
+	if(l>mod)
+		l%=mod;
+	if(m)
+	if(n==2)
+		return l;
+	if(n==1)
+		return m;
+	vv F;
+	v tmp;
+	tmp.pb(m-1);
+	tmp.pb(m-1);
+	F.pb(tmp);
+	tmp[0]=1;
+	tmp[1]=0;
+	F.pb(tmp);
+	vv mat=power(F, n-2); 
+	return (((mat[0][0]*l)%mod)+((mat[0][1]*m)%mod))%mod;
+} 
+
+// Driver code 
+int32_t main() 
+{ 
+	int t;cin>>t;
+	while(t--){
+	int n,m;cin>>n>>m;
+	int g=solve(n,m);
+	cout<<g<<endl;
+	
+}
+	return 0; 
+} 
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>matrix</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

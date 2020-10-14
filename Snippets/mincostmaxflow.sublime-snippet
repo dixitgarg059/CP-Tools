@@ -1,0 +1,148 @@
+<snippet>
+	<content><![CDATA[
+struct Edge
+{
+    int from, to, capacity, cost;
+};
+ 
+vector<vector<int>> adj, cost, capacity;
+ 
+const int INF = 1e9;
+ 
+void shortest_paths(int n, int v0, vector<int>& d, vector<int>& p) {
+    d.assign(n, INF);
+    d[v0] = 0;
+    vector<bool> inq(n, false);
+    queue<int> q;
+    q.push(v0);
+    p.assign(n, -1);
+ 
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        inq[u] = false;
+        for (int v : adj[u]) {
+            if (capacity[u][v] > 0 && d[v] > d[u] + cost[u][v]) {
+                d[v] = d[u] + cost[u][v];
+                p[v] = u;
+                if (!inq[v]) {
+                    inq[v] = true;
+                    q.push(v);
+                }
+            }
+        }
+    }
+}
+ 
+int min_cost_flow(int N, vector<Edge> edges, int K, int s, int t) {
+	int mncost=K;
+    adj.assign(N, vector<int>());
+    cost.assign(N, vector<int>(N, 0));
+    capacity.assign(N, vector<int>(N, 0));
+    for (Edge e : edges) {
+        adj[e.from].push_back(e.to);
+        adj[e.to].push_back(e.from);
+        cost[e.from][e.to] = e.cost;
+        cost[e.to][e.from] = -e.cost;
+        capacity[e.from][e.to] = e.capacity;
+    }
+ 
+    int flow = 0;
+    int cost = 0;
+    vector<int> d, p;
+    while (flow < K) {
+        shortest_paths(N, s, d, p);
+        if (d[t] == INF)
+            break;
+ 
+        // find max flow on that path
+        int f = K - flow;
+        int cur = t;
+        while (cur != s) {
+            f = min(f, capacity[p[cur]][cur]);
+            cur = p[cur];
+        }
+ 
+        // apply flow
+        flow += f;
+        cost += f * d[t];
+        cur = t;
+        while (cur != s) {
+            capacity[p[cur]][cur] -= f;
+            capacity[cur][p[cur]] += f;
+            cur = p[cur];
+        }
+    // if(mncost > cost)
+    	// mncost=cost;
+    }
+ 
+    // if (flow < K)
+        // return -1;
+    // else
+ 
+        return cost; // cost gives minimum cost for obtaining the maximum flow, mncost gives minimum cost for all flows in the network
+}
+vector<Edge>edges;
+void add_edge(int u,int v,int cap,int cost)
+{
+	Edge obj={u,v,cap,cost};
+	edges.pb(obj);
+	// cout<<u<<" -> "<<v<<" "<<cap<<" "<<cost<<endl;
+}
+struct hints{
+	int l,r,a;
+};
+int32_t main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	int n;cin>>n;
+	string str;cin>>str;
+	vector<int> b(n);in(b,n);
+	string str1=str;
+	sort(all(str1));
+	int s=0;
+	int counter=2*n+1;
+	int node1=counter++;
+	for(int i=0;i<n;i++)
+	{
+		add_edge(s,i+1,1,0);
+			add_edge(i+1,node1,1,0);
+		if(i<n-1 && str1[i]==str1[i+1])
+		{
+			continue;
+ 
+		}
+		int l=0,f=n-1;
+		while(l<=f)
+		{
+			int node2=counter++;
+			add_edge(node1,node2,1,0);
+			int c=0;
+			if(str[l]==str1[i])
+				c=-b[l];
+			add_edge(node2,n+1+l,1,c);
+			c=0;
+			if(str[f]==str1[i])
+				c=-b[f];
+			add_edge(node2,n+1+f,1,c);
+			l++;
+			f--;
+		}
+		node1=counter++;
+	}
+	int t=counter++;
+	for(int i=0;i<n;i++)
+		add_edge(i+n+1,t,1,0);
+	int inf=1e18;
+	int cost=min_cost_flow(counter,edges,inf,s,t);
+	// cout<<cost<<endl;
+	cout<<max(0ll,-cost)<<endl;
+	return 0;
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+		<tabTrigger>mincostmaxflow</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

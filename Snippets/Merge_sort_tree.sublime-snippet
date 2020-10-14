@@ -1,0 +1,41 @@
+<snippet>
+	<content><![CDATA[
+void build(ll pos,ll ss,ll se)
+{
+	if(ss==se)
+	{
+		seg[pos].pb(a[ss]);
+		return;
+	}
+	ll mid=(ss+se)/2;
+	build(2*pos+1,ss,mid);
+	build(2*pos+2,mid+1,se);
+	merge(seg[2 * pos+1].begin(), 
+		seg[2 * pos+1].end(), 
+		seg[2 * pos + 2].begin(), 
+		seg[2 * pos + 2].end(), 
+		back_inserter(seg[pos])); 
+}
+ll query(ll pos,ll ss,ll se,ll l,ll r,ll val)
+{
+	if(l>r)
+		return 0;
+	if(l>se || r  < ss)
+		return 0;
+	if(ss >=l && se<=r)
+	{
+		auto it=lower_bound(all(seg[pos]),val);
+		int num=(seg[pos].end()-it);
+		return num;
+	}
+	ll mid=(ss+se)/2;
+	ll max1=query(2*pos+1,ss,mid,l,r,val);
+	ll max2=query(2*pos+2,mid+1,se,l,r,val);
+	return max1+max2;
+}
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>mergesorttree</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>
