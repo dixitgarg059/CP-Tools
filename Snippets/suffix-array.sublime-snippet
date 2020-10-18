@@ -1,0 +1,160 @@
+<snippet>
+	<content><![CDATA[
+
+class SuffixArray{
+    
+    private:
+    vv table;
+    void build(const v &a)
+    {
+        int n=a.size();
+        table.resize(30,v(n,INT_MAX));
+        for(int i=0;i<n;i++)
+        {
+            table[0][i]=a[i];
+        }
+        for(int j=1;(1ll<<j)<=n;j++)
+        {
+            for(int i=0;i+(1ll<<j)-1 <n;i++)
+            {
+                table[j][i]=min(table[j-1][i],table[j-1][i+(1ll<<(j-1))]);
+            }
+        }
+    }
+    int query(int l,int r)
+    {
+        int len=(r-l+1);
+        int log=log2(len);
+        return min(table[log][l],table[log][r-(1ll<<log)+1]);
+    }
+    public:
+
+    vector<int>p,lcp,inv;
+    SuffixArray(string s)
+    {
+
+        // suffix array calculation in O(nlogn)
+         s+='\0';  
+
+        int n=s.size();
+        p.resize(n);
+        lcp.resize(n);
+        inv.resize(n);
+        vector<pair<char,int>>vec1;
+        for(int i=0;i<n;i++)
+        {
+            vec1.pb({s[i],i});
+        }
+        sort(all(vec1));
+        vector<int>p(n),c(n);
+        for(int i=0;i<n;i++)
+        {
+            p[i]=vec1[i].second;
+        }
+        c[p[0]]=0;
+        for(int i=1;i<n;i++)
+        {
+            if(s[p[i]]==s[p[i-1]])
+                c[p[i]]=c[p[i-1]];
+            else
+                c[p[i]]=c[p[i-1]]+1;
+        }
+        int k;
+        for(k=1;(1ll<<(k-1))<n;k++)
+        {
+            vector<int>count(n+1,0);
+            vpr vec(n);
+            for(int i=0;i<n;i++)
+            {
+                vec[i]={c[i],c[(i+(1ll<<(k-1)))%n]};
+                count[vec[i].first+1]++;
+            }
+            for(int i=1;i<n;i++)
+            {
+                count[i]+=count[i-1];
+            }
+            vector<int>p1(n);
+            for(int i=0;i<n;i++)
+            {
+                int j=(p[i]-(1ll<<(k-1))+n)%n;
+                p1[count[vec[j].first]++]=j;
+            }
+            p=p1;
+            c[p[0]]=0;
+            for(int i=1;i<n;i++)
+            {
+                if(vec[p[i]] == vec[p[i-1]])
+                    c[p[i]]=c[p[i-1]];
+                else
+                    c[p[i]]=c[p[i-1]]+1;
+            }
+        }
+
+                // lcp calculation in O(n)
+        // v inv(n);
+        for(int i=0;i<n;i++)
+            inv[p[i]]=i;
+        int j=inv[0],i;
+        for(i=0;i<n-p[j-1];i++)
+        {
+            if(s[i] != s[i+p[j-1]])
+                break;
+        }
+        v lcp(n);
+        lcp[j-1]=i;
+        for(int i=1;i<n;i++)
+        {
+            int j=inv[i];
+            if(j==0)
+                continue;
+            int i1=p[j-1],j_prev=inv[i-1],k=0;
+            if(j_prev==0)
+                k=0;
+            else
+                k=lcp[j_prev-1];
+            int l1=n-i,l2=n-i1,k1=max(0ll,k-1);
+            for(;k1<min(l1,l2);k1++)
+            {
+                if(s[k1+i] != s[k1+i1])
+                    break;
+            }
+            lcp[j-1]=k1;
+        }
+
+
+        build(lc); // sparse table 
+
+    }
+    int lcp(int i,int j)
+    {
+        i=inv[i];
+        j=inv[j];
+        if(i>j)
+            swap(i,j);
+        return query(i,j-1);
+    }
+
+    bool cmp(const pi &a,const pi &b)   // sorting in reverse order.
+    {
+        if(a.first == b.first)
+            return a.second > b.second;
+        int l=lcp(a.first,b.first);
+        int l1=a.second-a.first+1,l2=b.second-b.first+1;
+        if(l>=min(l1,l2))
+        {
+            if(l1 > l2)
+                return true;
+            if(l1 < l2)
+                return false;
+            return a.first > b.first;
+        }   
+        int i=inv[a.first],j=inv[b.first];
+        return i>j;
+    }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>suffix-array</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>
