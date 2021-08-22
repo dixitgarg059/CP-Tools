@@ -1,0 +1,101 @@
+<snippet>
+	<content><![CDATA[
+struct PersistentSegTree {
+
+    //  memory: 4*n*log(n), n = size of array
+    int N;
+    int Nodes;
+    int n;
+    vector<int> seg, lp, rp;
+
+    PersistentSegTree() {
+        Nodes = 0;
+        n = 0;
+    }
+    int Initialize(int n) {
+
+        this->n = n;
+        N = ceil(4 * n * log2(n)) + 1;
+        seg.resize(N, 0), lp.resize(N, -1), rp.resize(N, -1);
+        return build(0, n - 1);
+    }
+    int build(int ss, int se) {
+        int pos = Nodes++;
+        if (ss == se) {
+            seg[pos] = 0;
+            lp[pos] = -1;
+            rp[pos] = -1;
+            return pos;
+        }
+        int mid = (ss + se) / 2;
+        lp[pos] = build(ss, mid);
+        rp[pos] = build(mid + 1, se);
+        seg[pos] = seg[lp[pos]] + seg[rp[pos]];
+        return pos;
+    }
+    int update(int root, int ss, int se, int ind, int val) {
+        // update a[ind] = val
+        if (ind < ss || ind > se)
+            return root;
+        int pos = Nodes++;
+        if (ss == se) {
+            seg[pos] = val;
+            return pos;
+        }
+        int mid = (ss + se) / 2;
+        if (ind <= mid) {
+            lp[pos] = update(lp[root], ss, mid, ind, val);
+            rp[pos] = rp[root];
+            seg[pos] = seg[lp[pos]] + seg[rp[pos]];
+            return pos;
+        } else {
+            rp[pos] = update(rp[root], mid + 1, se, ind, val);
+            lp[pos] = lp[root];
+            seg[pos] = seg[lp[pos]] + seg[rp[pos]];
+            return pos;
+        }
+    }
+    ll query(int pos, int ss, int se, int l, int r) {
+        if (l <= ss && r >= se) {
+            return seg[pos];
+        }
+        if (l > se || r < ss)
+            return 0;
+        int mid = (ss + se) / 2;
+        return query(lp[pos], ss, mid, l, r) + query(rp[pos], mid + 1, se, l, r);
+    }
+};
+
+struct Distinct {
+    vector<int> roots;
+    int n;
+    PersistentSegTree obj;
+
+    Distinct(const v &arr) {
+        // obj = obj1;
+        int root = obj.Initialize(arr.size());
+        n = arr.size();
+        vector<int> next(n, n);
+        map<ll, ll> mapp;
+        for (int i = n - 1; i >= 0; i--) {
+            if (mapp.find(arr[i]) != mapp.end())
+                next[i] = mapp[arr[i]];
+            mapp[arr[i]] = i;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            root = obj.update(root, 0, n - 1, i, 1);
+            if (next[i] != n) {
+                root = obj.update(root, 0, n - 1, next[i], 0);
+            }
+            roots.pb(root);
+        }
+        reverse(all(roots));
+    }
+    ll count_distinct(int l, int r) { return obj.query(roots[l - 1], 0, n - 1, l - 1, r - 1); }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>distinct</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<!-- <scope>source.python</scope> -->
+</snippet>

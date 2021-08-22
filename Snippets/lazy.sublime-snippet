@@ -1,80 +1,67 @@
 <snippet>
 	<content><![CDATA[
-vector<int> seg,lazy;
-void merge(const int &a,const int &b,const int &c)
-{
-    c=a+b;
-    c=a^b;
-    c=a*b;
-    c=__gcd(a,b);
-}
-void build(int pos,int ss,int se,vector<int>&a)
-{
-    if(pos==0)
-    {
-        seg.resize(4*(se+1)+1);
-        lazy.resize(4*(se+1)+1);
+
+	vector<int> seg, lazy;
+void merge(const int &a, const int &b, int &c) { c = min(a, b); }
+void build(int pos, int ss, int se, vector<int> &a) {
+    if (pos == 0) {
+        seg.resize(4 * (se + 1) + 1);
+        lazy.resize(4 * (se + 1) + 1);
     }
-    if(ss==se)
-    {
-        seg[pos]=a[ss];
-        return ;
+    if (ss == se) {
+        seg[pos] = a[ss];
+        return;
     }
-    int mid=(ss+se)/2;
-    build(2*pos+1,ss,mid,a);
-    build(2*pos+2,mid+1,se,a);
-    merge(seg[2*pos+1],seg[2*pos+2],seg[pos]);
+    int mid = (ss + se) / 2;
+    build(2 * pos + 1, ss, mid, a);
+    build(2 * pos + 2, mid + 1, se, a);
+    merge(seg[2 * pos + 1], seg[2 * pos + 2], seg[pos]);
 }
-void update(int pos,int ss,int se,int l,int f,int val)
-{
-    if(lazy[pos]!=0)
-    {
-        seg[pos]+=(se-ss+1)*lazy[pos];
-        if(ss!=se){
-            lazy[2*pos+1]+=lazy[pos];
-            lazy[2*pos+2]+=lazy[pos];
+void update(int pos, int ss, int se, int l, int f, int val) {
+    if (lazy[pos] != 0) {
+        seg[pos] += lazy[pos];
+        if (ss != se) {
+            lazy[2 * pos + 1] += lazy[pos];
+            lazy[2 * pos + 2] += lazy[pos];
         }
-            lazy[pos]=0;
+        lazy[pos] = 0;
     }
-    if(ss > f || se < l || l > f)
-       return ;
-    if(ss >=l && se <=f)
-    {
-        seg[pos]+=(se-ss+1)*val;
-        if(ss!=se)
-        {
-            lazy[2*pos+1]+=val;
-            lazy[2*pos+2]+=val;
+    if (ss > f || se < l || l > f)
+        return;
+    if (ss >= l && se <= f) {
+        seg[pos] += val;
+        if (ss != se) {
+            lazy[2 * pos + 1] += val;
+            lazy[2 * pos + 2] += val;
         }
-    return ;
+        return;
     }
-    int mid=(ss+se)/2;
-    update(2*pos+1,ss,mid,l,f,val);
-    update(2*pos+2,mid+1,se,l,f,val);
-    merge(seg[2*pos+1],seg[2*pos+2],seg[pos])
-    return ;
+    int mid = (ss + se) / 2;
+    update(2 * pos + 1, ss, mid, l, f, val);
+    update(2 * pos + 2, mid + 1, se, l, f, val);
+    merge(seg[2 * pos + 1], seg[2 * pos + 2], seg[pos]);
+    return;
 }
-int query(int pos,int ss,int se,int l,int f)
-{
-   if(lazy[pos]!=0)
-    {
-        seg[pos]+=(se-ss+1)*lazy[pos];
-        if(ss!=se){
-            lazy[2*pos+1]+=lazy[pos];
-            lazy[2*pos+2]+=lazy[pos];
+int query(int pos, int ss, int se, int l, int f) {
+    if (lazy[pos] != 0) {
+        seg[pos] += lazy[pos];
+        if (ss != se) {
+            lazy[2 * pos + 1] += lazy[pos];
+            lazy[2 * pos + 2] += lazy[pos];
         }
-            lazy[pos]=0;
+        lazy[pos] = 0;
     }
-    //normal
-    if(ss > f || se < l)
-    return 0;
-    if(ss >=l && se <=f)
-     return seg[pos];
-     int mid=(ss+se)/2;
-     int ans;
-     merge(query(2*pos+1,ss,mid,l,f),query(2*pos+2,mid+1,se,l,f),ans);
-     return ans;
+    // normal
+    if (ss > f || se < l)
+        return 0;
+    if (ss >= l && se <= f)
+        return seg[pos];
+    int mid = (ss + se) / 2;
+    int ans;
+    merge(query(2 * pos + 1, ss, mid, l, f), query(2 * pos + 2, mid + 1, se, l, f), ans);
+    return ans;
 }
+
 ]]></content>
 	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
 	<tabTrigger>lazy</tabTrigger>
